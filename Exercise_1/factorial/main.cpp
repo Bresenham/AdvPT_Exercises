@@ -31,9 +31,15 @@ int main(int argc, char **args) {
 
 	if( std::cin.good() ) {
 
-		const double fac = factorial(fac_nmbr);
+		if( fac_nmbr < 0) {
 
-		std::cout << "Estimated factorial: " << fac << std::endl;
+			std::cout << "Unfortunately, we encountered an unexpected input." << std::endl;
+
+		} else {
+			const double fac = factorial(fac_nmbr);
+
+			std::cout << "Estimated factorial: " << fac << std::endl;
+		}
 
 	} else {
 		std::cout << "Unfortunately, we encountered an unexpected input." << std::endl;
