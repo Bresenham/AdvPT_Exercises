@@ -12,11 +12,11 @@ public:
     // Constructs a grid with the given size and initial tile.
     MyGrid(size_t rows, size_t cols, const Tile& initialTile) : _rows(rows), _cols(cols), _initTile(initialTile) {
 
-        Tile** grid = new Tile*[rows];
+        this->grid = new Tile*[rows];
         for(size_t r = 0; r < rows; ++r) {
-            grid[r] = new Tile[cols];
+            this->grid[r] = new Tile[cols];
             for(size_t c = 0; c < cols; ++c) {
-                grid[r][c] = initialTile;
+                this->grid[r][c] = initialTile;
             }
         }
     };
@@ -83,7 +83,7 @@ public:
         if( validPosition(row, col) ) {
             return grid[row][col];
         } else {
-            throw std::invalid_argument( "Received position is not valid!" );
+            throw invalid_grid_position();
         }
     };
 
@@ -92,7 +92,7 @@ public:
         if( validPosition(row, col) ) {
             return grid[row][col];
         } else {
-            throw std::invalid_argument( "Received position is not valid!" );
+            throw invalid_grid_position();
         }
     };
 
@@ -107,6 +107,6 @@ private:
     size_t _rows;
     size_t _cols;
     const Tile& _initTile;
-    Tile **grid;
+    Tile** grid;
 
 };

@@ -5,21 +5,22 @@
 #include "Tile.hpp"
 #include "MyGrid.hpp"
 
-invalid_grid_position invalid_grid_position;
 
 // TODO Define all member functions:
 
 void MyGrid::print(std::ostream& ostream) const {
 
     ostream << this->_rows << std::endl;
+
     ostream << this->_cols << std::endl;
 
     for(size_t r = 0; r < this->_rows; ++r) {
-        for(size_t c = 0; c < this->_rows; ++c) {
+        for(size_t c = 0; c < this->_cols; ++c) {
             ostream << char_from_tile( this->grid[r][c] );
         }
-    }
 
+        ostream << std::endl;
+    }  
 }
 
 MyGrid MyGrid::read(std::istream& input_stream) {
@@ -33,11 +34,11 @@ MyGrid MyGrid::read(std::istream& input_stream) {
 
     for(size_t r = 0; r < rows; ++r) {
 
-        std::string line;
-        std::getline(input_stream, line);
-
         for(size_t c = 0; c < cols; ++c) {
-            new_grid(r, c) = tile_from_char( line.at(c) );
+
+            char tile;
+            input_stream >> tile;
+            new_grid(r, c) = tile_from_char( tile );
         }
 
     }
