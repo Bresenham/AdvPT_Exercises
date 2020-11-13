@@ -9,7 +9,20 @@ invalid_grid_position invalid_grid_position;
 
 // TODO Define all member functions:
 
-static MyGrid read(std::istream& input_stream) {
+void MyGrid::print(std::ostream& ostream) const {
+
+    ostream << this->_rows << std::endl;
+    ostream << this->_cols << std::endl;
+
+    for(size_t r = 0; r < this->_rows; ++r) {
+        for(size_t c = 0; c < this->_rows; ++c) {
+            ostream << char_from_tile( this->grid[r][c] );
+        }
+    }
+
+}
+
+MyGrid MyGrid::read(std::istream& input_stream) {
 
     size_t rows, cols;
     input_stream >> rows;
