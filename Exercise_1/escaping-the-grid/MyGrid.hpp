@@ -8,17 +8,33 @@ public:
     // The Constructor
     //
     // Constructs a grid with the given size and initial tile.
-    MyGrid(size_t rows, size_t cols, const Tile& initialTile);
+    MyGrid(size_t rows, size_t cols, const Tile& initialTile) : _rows(rows), _cols(cols), _initTile(initialTile) {
+
+        Tile** grid = new Tile*[rows];
+        for(size_t r = 0; r < rows; ++r) {
+            grid[r] = new Tile[cols];
+            for(size_t c = 0; c < cols; ++c) {
+                grid[r][c] = initialTile;
+            }
+        }
+    };
 
     // The Copy Constructor
     //
     // Constructs a grid with the same size and contents as the supplied
     // other grid.
-    MyGrid(const MyGrid&);
+    MyGrid(const MyGrid& other) : MyGrid(other._rows, other._cols, other._initTile) {
+
+        for(size_t r = 0; r < other._rows; ++r) {
+            for(size_t c = 0; c < other._cols; ++c) {
+                this->grid[r][c] = other.grid[r][c];
+            }
+        }
+    };
 
     // The Move Constructor
     //
-    // Constructs a grid with the same size and contents as tha supplied
+    // Constructs a grid with the same size and contents as the supplied
     // other grid.  Potentially reuse data from that other grid.
     MyGrid(MyGrid&&) noexcept;
 
@@ -37,19 +53,27 @@ public:
 
     MyGrid& operator=(const Grid&);
 
-    size_t rows() const override;
+    size_t rows() const override { return this->_rows; };
 
-    size_t cols() const override;
+    size_t cols() const override { return this->_cols; };
 
-    bool validPosition(size_t row, size_t col) const noexcept override;
+    bool validPosition(size_t row, size_t col) const noexcept override { return ( (row >= 0 && row < this->_rows) && (col >= 0 && col < this->_cols) ); };
 
     Tile& operator()(size_t row, size_t col) override;
 
     const Tile& operator()(size_t row, size_t col) const override;
 
     void print(std::ostream&) const override;
+
     static MyGrid read(std::istream&);
 
 protected:
     // TODO Add custom member functions and variables here:
+private:
+
+    const size_t _rows;
+    const size_t _cols;
+    const Tile& _initTile;
+    Tile **grid;
+
 };
