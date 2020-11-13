@@ -24,11 +24,11 @@ static MyGrid read(std::istream& input_stream) {
         std::getline(input_stream, line);
 
         for(size_t c = 0; c < cols; ++c) {
-            
-            const Tile t = tile_from_char( line.at(c) );
-            
+            new_grid(r, c) = tile_from_char( line.at(c) );
         }
 
     }
+
+    return new_grid;
 
 }

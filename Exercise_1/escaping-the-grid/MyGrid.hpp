@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Grid.hpp"
+#include "stdexcept"
 
 class MyGrid : public Grid {
 public:
@@ -59,7 +60,14 @@ public:
 
     bool validPosition(size_t row, size_t col) const noexcept override { return ( (row >= 0 && row < this->_rows) && (col >= 0 && col < this->_cols) ); };
 
-    Tile& operator()(size_t row, size_t col) override;
+    Tile& operator()(size_t row, size_t col) override {
+
+        if( validPosition(row, col) ) {
+            return grid[row][col];
+        } else {
+            throw std::invalid_argument( "Received position is not valid!" );
+        }
+    };
 
     const Tile& operator()(size_t row, size_t col) const override;
 
