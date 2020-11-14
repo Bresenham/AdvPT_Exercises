@@ -23,7 +23,6 @@ size_t count_neighboring_paths(const Grid& grid, size_t row, size_t col) {
 
 void test_escape(std::istream& stream) {
     MyGrid grid = MyGrid::read(stream);
-    std::cout << "Successfully read file." << std::endl;
     size_t rows = grid.rows();
     size_t cols = grid.cols();
 

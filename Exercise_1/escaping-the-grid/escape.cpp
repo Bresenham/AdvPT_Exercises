@@ -109,42 +109,48 @@ bool already_gone(const std::vector<Location> &path, const Location &loc) {
     return false;
 }
 
-bool recursive_walk(const Location &loc, std::vector<Location> &current_path, std::vector<Location> &final_path, const Direction &dir, const Grid &grid) {
+int recursive_walk(const Location &loc, std::vector<Location> &current_path, std::vector< std::vector<Location> > &final_paths, const Direction &dir, const Grid &grid) {
 
     Location copyLoc(loc);
     copyLoc.move(dir);
 
     if( copyLoc.is_escape_tile(grid) ) {
-        final_path.push_back(copyLoc);
-        return true;
+        std::vector<Location> new_escape_path;
+        new_escape_path.push_back(copyLoc);
+        final_paths.push_back(new_escape_path);
+        return final_paths.size() - 1;
     }
 
     if( already_gone(current_path, copyLoc) ) {
-        return false;
+        return -1;
     }
 
     const std::vector<Direction> dirs = available_directions(copyLoc, grid);
 
     for(size_t i = 0; i < dirs.size(); ++i) {
 
-        std::vector<Location> path(current_path);
+        std::vector<Location> path;
+        
+        for(size_t i = 0; i < current_path.size(); ++i) {
+            path.push_back(current_path.at(i));
+        }
+
         path.push_back(copyLoc);
 
-        if( recursive_walk(copyLoc, path, final_path, dirs.at(i), grid) ) {
-            final_path.push_back(copyLoc);
-            return true;
+        const int final_path_idx = recursive_walk(copyLoc, path, final_paths, dirs.at(i), grid);
+        if( final_path_idx >= 0 ) {
+            final_paths.at(final_path_idx).push_back(copyLoc);
+            return final_path_idx;
         }
     }
 
-    return false;
+    return -1;
 
 }
 
 void Grid::escape() {
     Grid& grid = *this;
     assert(grid(1,1) == Floor); // Check that the initial tile is valid.
-    assert(grid.validPosition(3,4) == true);
-    assert(grid(3,4) == Floor);
 
     // TODO implement some path finding algorithm find a correct path to an
     // exit tile, and then write that path to the grid.
@@ -152,21 +158,33 @@ void Grid::escape() {
     Location loc(1, 1);
     std::vector<Direction> dirs = available_directions(loc, grid);
 
+    std::vector< std::vector<Location> > final_paths;
+
     for(const Direction &dir : dirs) {
 
         std::vector<Location> path;
-        std::vector<Location> finalPath;
+        path.push_back(loc);
 
-        const bool success = recursive_walk(loc, path, finalPath, dir, grid);
-        if( success ) {
-            finalPath.push_back(loc);
-            std::cout << "SUCCESS PATH:" << std::endl;
-            for(Location &loc : finalPath) {
-                std::cout << "(" << loc.get_x() << "," << loc.get_y() << ")" << std::endl;
-                grid(loc.get_x(), loc.get_y()) = Path;
-            }
+        const int ret_idx = recursive_walk(loc, path, final_paths, dir, grid);
+        if( ret_idx >= 0 ) {
+            final_paths.at(ret_idx).push_back(loc);
         }
     }
+
+    std::vector<Location> shortest_path = final_paths.at(0);
+
+    for(const std::vector<Location> &final_path : final_paths) {
+        if(final_path.size() < shortest_path.size()) {
+            shortest_path = final_path;
+        }
+    }
+
+    std::cout << "SUCCESS PATH:" << std::endl;
+    for(const Location &loc : shortest_path) {
+        std::cout << "(" << loc.get_x() << "," << loc.get_y() << ")" << std::endl;
+        grid(loc.get_x(), loc.get_y()) = Path;
+    }
+
 
     grid.print(std::cout);
 
