@@ -3,10 +3,9 @@
 #include <vector>
 
 #include "Grid.hpp"
+#include "Location.hpp"
 
 // Feel free to include additional headers here!
-
-enum Direction { Left, Right, Up, Down };
 
 std::string print_dir(const Direction &dir) {
     switch(dir) {
@@ -27,57 +26,6 @@ std::string print_dir(const Direction &dir) {
 }
 
 static const std::vector<Direction> ALL_DIRS = { Left, Right, Up, Down };
-
-class Location {
-public:
-    Location(const size_t x, const size_t y) : _x(x), _y(y) { };
-    Location(Location& other) : Location(other._x, other._y) { };
-    Location(const Location& other) : Location(other._x, other._y) { };
-
-    void move(const Direction &dir) {
-        switch(dir) {
-            case Left: {
-                this->_x -= 1;
-            } break;
-            case Right: {
-                this->_x += 1;
-            } break;
-            case Up: {
-                this->_y -= 1;
-            } break;
-            case Down: {
-                this->_y += 1;
-            } break;
-            default: break;
-        }
-    }
-
-    bool is_valid(const Grid &grid) {
-
-        const bool valid_pos = grid.validPosition(this->get_x(), this->get_y());
-        const Tile &tile = grid(this->get_x(), this->get_y());
-
-        return valid_pos && ( tile == Floor );
-    }
-
-    friend bool operator==(const Location& lhs, const Location& rhs) {
-        return lhs.get_x() == rhs.get_x() && lhs.get_y() == rhs.get_y();
-    }
-
-    size_t get_x() const { return _x; }
-    size_t get_y() const { return _y; }
-
-    bool is_escape_tile(const Grid &grid) {
-        return ( this->_x == ( grid.cols() - 1 ) )
-                || ( this->_y == ( grid.rows() -1 ) )
-                || this->_x == 0
-                || this->_y == 0;
-    }
-
-private:
-    size_t _x;
-    size_t _y;
-};
 
 // Feel free to define auxiliary functions here!
 
@@ -148,12 +96,7 @@ int recursive_walk(const Location &loc, std::vector<Location> &current_path, std
 
 }
 
-void Grid::escape() {
-    Grid& grid = *this;
-    assert(grid(1,1) == Floor); // Check that the initial tile is valid.
-
-    // TODO implement some path finding algorithm find a correct path to an
-    // exit tile, and then write that path to the grid.
+std::vector<Location> escape_small_grid(Grid &grid) {
 
     Location loc(1, 1);
     std::vector<Direction> dirs = available_directions(loc, grid);
@@ -179,8 +122,34 @@ void Grid::escape() {
         }
     }
 
+    return shortest_path;
+}
+
+std::vector<Location> escape_large_grid(Grid &grid) {
+
+    Location loc(1, 1);
+    std::vector<Location> path;
+    path.push_back(loc);
+
+    while( !path.end()->is_escape_tile(grid) ) {
+
+    }
+}
+
+void Grid::escape() {
+    Grid& grid = *this;
+    assert(grid(1,1) == Floor); // Check that the initial tile is valid.
+
+    std::vector<Location> path;
+    if(grid.rows() * grid.cols() < 250) {
+        path = escape_small_grid(grid);
+    } else {
+
+    }
+
+
     std::cout << "SUCCESS PATH:" << std::endl;
-    for(const Location &loc : shortest_path) {
+    for(const Location &loc : path) {
         std::cout << "(" << loc.get_x() << "," << loc.get_y() << ")" << std::endl;
         grid(loc.get_x(), loc.get_y()) = Path;
     }
