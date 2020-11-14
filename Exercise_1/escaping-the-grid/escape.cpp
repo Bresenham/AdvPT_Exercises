@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <cassert>
 #include <vector>
+#include <queue>
 
 #include "Grid.hpp"
 #include "Location.hpp"
@@ -125,13 +126,60 @@ std::vector<Location> escape_small_grid(Grid &grid) {
     return shortest_path;
 }
 
-std::vector<Location> escape_large_grid(Grid &grid) {
+void escape_large_grid(Grid &grid) {
 
-    Location loc(1, 1);
-    std::vector<Location> path;
-    path.push_back(loc);
+    Location start(1, 1);
 
-    while( !path.end()->is_escape_tile(grid) ) {
+    std::deque<Location> queue;
+    queue.push_back(start);
+
+    std::deque<std::vector<Location>> path_queue;
+    std::vector<Location> initial_path;
+    initial_path.push_back(start);
+    path_queue.push_back(initial_path);
+
+
+    std::vector<Location> visited;
+
+    while(true) {
+
+        Location loc = queue.front();
+        queue.pop_front();
+
+        std::vector<Location> path = path_queue.front();
+        path_queue.pop_front();
+
+        if( loc.is_escape_tile(grid) ) {
+            for(const Location &l : path) {
+                grid(l.get_x(), l.get_y()) = Path;
+            }
+            break;
+        }
+
+        if( already_gone(visited, loc) ) {
+            continue;
+        }
+
+        visited.push_back(loc);
+
+        std::vector<Direction> directions = available_directions(loc, grid);
+        
+        for(const Direction &dir : directions) {
+
+            Location l(loc);
+            l.move(dir);
+
+            queue.push_back(l);
+
+            std::vector<Location> new_path;
+            for(const Location &loc : path) {
+                new_path.push_back(loc);
+            }
+
+            new_path.push_back(l);
+
+            path_queue.push_back(new_path);
+        }
 
     }
 }
@@ -140,18 +188,13 @@ void Grid::escape() {
     Grid& grid = *this;
     assert(grid(1,1) == Floor); // Check that the initial tile is valid.
 
-    std::vector<Location> path;
     if(grid.rows() * grid.cols() < 250) {
-        path = escape_small_grid(grid);
+        std::vector<Location> path = escape_small_grid(grid);
+        for(const Location &loc : path) {
+            grid(loc.get_x(), loc.get_y()) = Path;
+        }
     } else {
-
-    }
-
-
-    std::cout << "SUCCESS PATH:" << std::endl;
-    for(const Location &loc : path) {
-        std::cout << "(" << loc.get_x() << "," << loc.get_y() << ")" << std::endl;
-        grid(loc.get_x(), loc.get_y()) = Path;
+        escape_large_grid(grid);
     }
 
 
