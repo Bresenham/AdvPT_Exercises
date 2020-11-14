@@ -16,7 +16,7 @@ void MyGrid::print(std::ostream& ostream) const {
 
     for(size_t r = 0; r < this->_rows; ++r) {
         for(size_t c = 0; c < this->_cols; ++c) {
-            ostream << char_from_tile( this->grid[r][c] );
+            ostream << char_from_tile( this->grid[c][r] );
         }
 
         ostream << std::endl;

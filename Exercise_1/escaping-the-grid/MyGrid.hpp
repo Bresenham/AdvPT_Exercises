@@ -12,11 +12,11 @@ public:
     // Constructs a grid with the given size and initial tile.
     MyGrid(size_t rows, size_t cols, const Tile& initialTile) : _rows(rows), _cols(cols), _initTile(initialTile) {
 
-        this->grid = new Tile*[rows];
-        for(size_t r = 0; r < rows; ++r) {
-            this->grid[r] = new Tile[cols];
-            for(size_t c = 0; c < cols; ++c) {
-                this->grid[r][c] = initialTile;
+        this->grid = new Tile*[cols];
+        for(size_t c = 0; c < cols; ++c) {
+            this->grid[c] = new Tile[rows];
+            for(size_t r = 0; r < rows; ++r) {
+                this->grid[c][r] = initialTile;
             }
         }
     };
@@ -29,7 +29,7 @@ public:
 
         for(size_t r = 0; r < other._rows; ++r) {
             for(size_t c = 0; c < other._cols; ++c) {
-                this->grid[r][c] = other.grid[r][c];
+                this->grid[c][r] = other.grid[c][r];
             }
         }
     };
@@ -81,7 +81,7 @@ public:
     Tile& operator()(size_t row, size_t col) override {
 
         if( validPosition(row, col) ) {
-            return grid[row][col];
+            return grid[col][row];
         } else {
             throw invalid_grid_position();
         }
