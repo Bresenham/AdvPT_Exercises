@@ -90,7 +90,7 @@ public:
     const Tile& operator()(size_t row, size_t col) const override {
 
         if( validPosition(row, col) ) {
-            return grid[row][col];
+            return grid[col][row];
         } else {
             throw invalid_grid_position();
         }
