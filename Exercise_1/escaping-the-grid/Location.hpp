@@ -10,7 +10,7 @@ public:
     Location(Location& other) : Location(other._x, other._y) { };
     Location(const Location& other) : Location(other._x, other._y) { };
 
-    Location move(const Direction &dir) {
+    Location move(const Direction &dir) const {
         switch(dir) {
             case Left: {
                 return Location(this->_x - 1, this->_y);
@@ -28,7 +28,7 @@ public:
         }
     }
 
-    bool is_valid(const Grid &grid) {
+    bool is_valid(const Grid &grid) const {
 
         const bool valid_pos = grid.validPosition(this->get_x(), this->get_y());
         const Tile &tile = grid(this->get_x(), this->get_y());
@@ -43,7 +43,7 @@ public:
     size_t get_x() const { return _x; }
     size_t get_y() const { return _y; }
 
-    bool is_escape_tile(const Grid &grid) {
+    bool is_escape_tile(const Grid &grid) const {
         return ( this->_x == ( grid.cols() - 1 ) )
                 || ( this->_y == ( grid.rows() -1 ) )
                 || this->_x == 0

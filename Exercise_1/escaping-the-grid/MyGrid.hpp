@@ -13,6 +13,7 @@ public:
     MyGrid(size_t rows, size_t cols, const Tile& initialTile) : _rows(rows), _cols(cols), _initTile(initialTile) {
 
         this->grid = new Tile*[cols];
+
         for(size_t c = 0; c < cols; ++c) {
 
             this->grid[c] = new Tile[rows];
@@ -41,7 +42,8 @@ public:
     //
     // Constructs a grid with the same size and contents as the supplied
     // other grid.  Potentially reuse data from that other grid.
-    MyGrid(MyGrid&& move) noexcept : _rows( std::exchange(move._rows, 0) ), _cols( std::exchange(move._cols, 0) ), _initTile( move._initTile ), grid( std::exchange(move.grid, nullptr) ) {  };
+    MyGrid(MyGrid&& move) noexcept : _rows( std::exchange(move._rows, 0) ), _cols( std::exchange(move._cols, 0) ), _initTile( move._initTile ),
+                                    grid( std::exchange(move.grid, nullptr) ) {  };
 
     // The Move Assignment Operator
     //
@@ -104,10 +106,10 @@ public:
 protected:
     // TODO Add custom member functions and variables here:
 private:
-
     size_t _rows;
     size_t _cols;
-    const Tile& _initTile;
-    Tile** grid;
 
+    const Tile& _initTile;
+
+    Tile** grid;
 };

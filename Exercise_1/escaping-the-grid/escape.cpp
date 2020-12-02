@@ -30,7 +30,6 @@ static const std::vector<Direction> ALL_DIRS = { Left, Right, Up, Down };
 
 /**
  * Returns all available directions, starting from a position 'loc' in Grid 'grid'
- * 
  */
 std::vector<Direction> available_directions(Location loc, const Grid &grid) {
 
@@ -66,9 +65,10 @@ bool already_gone(const std::vector<Location> &path, const Location &loc) {
  * Recursively travels the Grid 'grid' starting from Location 'loc' with path 'current_path'.
  * 'final_paths' contains all valid paths and is updated if a new path is found. In the end, the shortest path will be chosen.
  */
-int recursive_walk(Location loc, std::vector<Location> &current_path, std::vector< std::vector<Location> > &final_paths, const Direction &dir, const Grid &grid) {
+int recursive_walk(Location loc, std::vector<Location> &current_path, std::vector< std::vector<Location> > &final_paths,
+                    const Direction &dir, const Grid &grid) {
 
-    Location _loc = loc.move(dir);
+    const Location _loc = loc.move(dir);
 
     /* Stop recursion if we escaped the grid */
     if( _loc.is_escape_tile(grid) ) {
@@ -83,20 +83,16 @@ int recursive_walk(Location loc, std::vector<Location> &current_path, std::vecto
     }
 
     /* If we already visited this tile, end this recursive path */
-    if( already_gone(current_path, _loc) ) {
-        return -1;
-    }
-
-    const std::vector<Direction> dirs = available_directions(_loc, grid);
+    if( already_gone(current_path, _loc) ) { return -1; }
 
     /* Start new recursive walks from all available directions */
-    for(size_t i = 0; i < dirs.size(); ++i) {
+    for(const Direction &dir : available_directions(_loc, grid)) {
 
         /* All new recursive walks branch out from this existing one */
         std::vector<Location> path(current_path);
         path.push_back(_loc);
 
-        const int final_path_idx = recursive_walk(_loc, path, final_paths, dirs.at(i), grid);
+        const int final_path_idx = recursive_walk(_loc, path, final_paths, dir, grid);
 
         /* If recursive call was successfull (= escaped the grid), add path to list of successfull paths */
         if( final_path_idx >= 0 ) {
@@ -126,6 +122,8 @@ std::vector<Location> escape_small_grid(Grid &grid) {
         path.push_back(loc);
 
         const int ret_idx = recursive_walk(loc, path, final_paths, dir, grid);
+
+        /* Check if path was successfull */
         if( ret_idx >= 0 ) {
             final_paths.at(ret_idx).push_back(loc);
         }
@@ -150,11 +148,12 @@ void escape_large_grid(Grid &grid) {
 
     Location start(1, 1);
 
-    std::deque<Location> remaining_locations;
-    remaining_locations.push_back(start);
-
     std::vector<Location> initial_path;
     initial_path.push_back(start);
+
+    /* 'path_of_current_location' is linked to 'remaining_locations' */
+    std::deque<Location> remaining_locations;
+    remaining_locations.push_back(start);
 
     std::deque< std::vector<Location> > path_of_current_location;
     path_of_current_location.push_back(initial_path);
@@ -163,7 +162,8 @@ void escape_large_grid(Grid &grid) {
 
     while(true) {
 
-        Location loc = remaining_locations.front();
+        /* Pop next remaining location and associated path and build further paths based on them */
+        const Location loc = remaining_locations.front();
         remaining_locations.pop_front();
 
         std::vector<Location> path = path_of_current_location.front();
@@ -176,26 +176,20 @@ void escape_large_grid(Grid &grid) {
             }
     
             break;
-
         }
 
-        if( already_gone(visited, loc) ) {
-            continue;
-        }
+        if( already_gone(visited, loc) ) { continue; }
 
         visited.push_back(loc);
         
         for(const Direction &dir : available_directions(loc, grid)) {
 
-            Location _loc = loc.move(dir);
+            const Location _loc = loc.move(dir);
 
             remaining_locations.push_back(_loc);
 
-            std::vector<Location> new_path;
-            for(const Location &__loc : path) {
-                new_path.push_back(__loc);
-            }
-
+            /* New paths are based on the current path */
+            std::vector<Location> new_path(path);
             new_path.push_back(_loc);
 
             path_of_current_location.push_back(new_path);
@@ -207,19 +201,19 @@ void escape_large_grid(Grid &grid) {
 void Grid::escape() {
 
     Grid& grid = *this;
-    assert(grid(1,1) == Floor); // Check that the initial tile is valid.
+    /* Check that the initial tile is valid. */
+    assert(grid(1,1) == Floor);
 
-    /* Fully recursive approach takes too long for larger grid */
+    /* Fully recursive approach takes too long for larger grids */
     if(grid.rows() * grid.cols() < 250) {
 
         std::vector<Location> path = escape_small_grid(grid);
         for(const Location &loc : path) {
             grid(loc.get_x(), loc.get_y()) = Path;
         }
-
+    /* use breadth-first search approach instead */
     } else { escape_large_grid(grid); }
 
 
     grid.print(std::cout);
-
 }
