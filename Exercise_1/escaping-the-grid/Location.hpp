@@ -10,21 +10,21 @@ public:
     Location(Location& other) : Location(other._x, other._y) { };
     Location(const Location& other) : Location(other._x, other._y) { };
 
-    void move(const Direction &dir) {
+    Location move(const Direction &dir) {
         switch(dir) {
             case Left: {
-                this->_x -= 1;
+                return Location(this->_x - 1, this->_y);
             } break;
             case Right: {
-                this->_x += 1;
+                return Location(this->_x + 1, this->_y);
             } break;
             case Up: {
-                this->_y -= 1;
+                return Location(this->_x, this->_y - 1);
             } break;
             case Down: {
-                this->_y += 1;
+                return Location(this->_x, this->_y + 1);
             } break;
-            default: break;
+            default: return *this;
         }
     }
 

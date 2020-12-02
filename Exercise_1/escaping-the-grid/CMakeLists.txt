@@ -1,6 +1,6 @@
 project(AdvPT)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pedantic")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pedantic -g -O0")
 
 add_executable( gridtest Tile.cpp Grid.cpp MyGrid.cpp gridtest.cpp)
 

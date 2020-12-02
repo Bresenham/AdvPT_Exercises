@@ -2,7 +2,7 @@
 
 #include "Grid.hpp"
 #include <utility>
-#include "stdexcept"
+#include <stdexcept>
 
 class MyGrid : public Grid {
 public:
@@ -14,10 +14,13 @@ public:
 
         this->grid = new Tile*[cols];
         for(size_t c = 0; c < cols; ++c) {
+
             this->grid[c] = new Tile[rows];
+
             for(size_t r = 0; r < rows; ++r) {
                 this->grid[c][r] = initialTile;
             }
+
         }
     };
 
@@ -38,7 +41,7 @@ public:
     //
     // Constructs a grid with the same size and contents as the supplied
     // other grid.  Potentially reuse data from that other grid.
-    MyGrid(MyGrid&& move) noexcept : _rows( std::exchange(move._rows, 0) ), _cols( std::exchange(move._cols, 0) ), _initTile( move._initTile ), grid( std::exchange(move.grid, nullptr) ) {};
+    MyGrid(MyGrid&& move) noexcept : _rows( std::exchange(move._rows, 0) ), _cols( std::exchange(move._cols, 0) ), _initTile( move._initTile ), grid( std::exchange(move.grid, nullptr) ) {  };
 
     // The Move Assignment Operator
     //
@@ -67,10 +70,7 @@ public:
         delete[] this->grid;
     };
 
-    MyGrid& operator=(const Grid&) {
-
-        return *this;
-    };
+    MyGrid& operator=(const Grid&) { return *this; };
 
     size_t rows() const override { return this->_rows; };
 
@@ -94,6 +94,7 @@ public:
         } else {
             throw invalid_grid_position();
         }
+
     };
 
     void print(std::ostream&) const override;

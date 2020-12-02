@@ -6,8 +6,6 @@
 #include "MyGrid.hpp"
 
 
-// TODO Define all member functions:
-
 void MyGrid::print(std::ostream& ostream) const {
 
     ostream << this->_rows << std::endl;
@@ -38,7 +36,7 @@ MyGrid MyGrid::read(std::istream& input_stream) {
 
             char tile;
             input_stream >> tile;
-            new_grid(r, c) = tile_from_char( tile );
+            new_grid( r, c ) = tile_from_char( tile );
         }
 
     }
